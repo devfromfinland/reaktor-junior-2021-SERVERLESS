@@ -55,15 +55,8 @@ functions:
           path: /products/{category}
           method: get
           cors: true
-  # getAvailability:
-  #   handler: getAvailability.main
-  #   events:
-  #     - http:
-  #         path: /availability/{manufacturer}
-  #         method: get
-  #         cors: true
-  # updateDatabase:
-  #   handler: updateDatabase.main
+  updateDatabase:
+    handler: updateDatabase.main
 
 resources:
   Resources:

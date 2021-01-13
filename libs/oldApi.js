@@ -1,6 +1,5 @@
 /* eslint-disable no-await-in-loop */
 import fetch from 'node-fetch';
-import { CATEGORIES, MANUFACTURERS } from './helpers';
 
 export const API_BASE_URL = 'https://bad-api-assignment.reaktor.com/v2';
 const FORCE_ERROR = false;
@@ -15,11 +14,12 @@ export const fetchProductsByCategory = async (category) => {
     })
     : await fetch(`${API_BASE_URL}/products/${category}`);
   const data = await res.json();
-  console.log(data[0]);
+  // console.log(`${category}: ${data.length} items`);
+  // console.log(data[0]);
   return data;
 };
 
-const getAvailabilityByManufacturer = async (manufacturer) => {
+export const fetchAvailability = async (manufacturer) => {
   let flag = true;
   let res = null;
   let data = null;
@@ -33,38 +33,15 @@ const getAvailabilityByManufacturer = async (manufacturer) => {
       : await fetch(`${API_BASE_URL}/availability/${manufacturer}`);
 
     data = await res.json();
-    console.log(manufacturer, typeof (data.response), data.response.length);
+    // console.log(manufacturer, typeof (data.response), data.response.length);
     if (typeof (data.response) === 'object' && data.response.length > 0) {
       flag = false;
+    } else {
+      flag = true;
     }
   } while (flag);
 
-  console.log(data.response);
+  // console.log(data.response);
 
-  return data;
-};
-
-const fetchAllData = async () => {
-  const data = {
-    categories: {},
-    manufacturers: {}
-  };
-
-  CATEGORIES.forEach(async (category) => {
-    try {
-      data.categories[category] = await fetchProductsByCategory(category);
-    } catch (err) {
-      console.log('error while fetching products', err);
-    }
-  });
-
-  MANUFACTURERS.forEach(async (manufacturer) => {
-    try {
-      data.manufacturers[manufacturer] = await getAvailabilityByManufacturer(manufacturer);
-    } catch (err) {
-      console.log('error while fetching availability', err);
-    }
-  });
-
-  return data;
+  return data.response;
 };

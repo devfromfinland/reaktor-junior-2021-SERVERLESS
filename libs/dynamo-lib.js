@@ -37,21 +37,20 @@ const prepProductsBeforeUpdates = (products) => {
 };
 
 export const updateProducts = async (products) => {
-  // try with first 3 products
-  const preparedProducts = prepProductsBeforeUpdates(products);
+  let count = 0;
+  while (count < products.length) {
+    const arrItems = products.slice(count, count + 25);
+    // console.log('arrItems', arrItems.length);
+    count += 25;
 
-  const batchUpdateParams = {
-    RequestItems: {
-      [process.env.productTableName]: preparedProducts
-    }
-  };
+    const batchUpdateParams = {
+      RequestItems: {
+        [process.env.productTableName]: arrItems
+      }
+    };
 
-  try {
-    const result = await dynamoDb.batchWrite(batchUpdateParams).promise();
-
-    // todo: re-submit unprocessed items
-    console.log('unprocessedItems', result.UnprocessedItems);
-  } catch (err) {
-    console.log('error', err);
+    dynamoDb.batchWrite(batchUpdateParams, (err, data) => {
+      if (err) console.log('error while updating products');
+    });
   }
 };
