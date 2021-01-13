@@ -1,0 +1,30 @@
+{
+  "name": "reaktor-junior-2021-serverless",
+  "version": "1.0.0",
+  "description": "lambda functions for Reaktor Junior 2021",
+  "main": "handler.js",
+  "scripts": {
+    "test": "serverless-bundle test",
+    "lint": "npx eslint **",
+    "lint:fix": "npx eslint ** --fix",
+    "deploy": "sls deploy --stage dev --aws-profile dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devfromfinland/reaktor-junior-2021-SERVERLESS.git"
+  },
+  "author": "Viet Phan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/devfromfinland/reaktor-junior-2021-SERVERLESS/issues"
+  },
+  "homepage": "https://github.com/devfromfinland/reaktor-junior-2021-SERVERLESS#readme",
+  "devDependencies": {
+    "aws-sdk": "^2.826.0",
+    "eslint": "^7.17.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.22.1",
+    "serverless-bundle": "^4.2.0",
+    "serverless-offline": "^6.8.0"
+  }
+}
