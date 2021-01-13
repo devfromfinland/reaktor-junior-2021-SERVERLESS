@@ -1,4 +1,4 @@
-service: junior-reaktor-2021
+service: junior-reaktor-2021-v2
 # app and org for use with dashboard.serverless.com
 app: reaktor-2021
 org: vietasia
@@ -15,6 +15,9 @@ plugins:
   - serverless-bundle # Package our functions with Webpack
   - serverless-offline
 
+custom:
+  productTableName: product
+
 provider:
   name: aws
   runtime: nodejs12.x
@@ -24,7 +27,11 @@ provider:
   region: eu-west-1
   apiGateway:
     shouldStartNameWithService: true
-
+  
+  # accessible via process.env.{variable}
+  environment:
+    productTableName: ${self:custom.productTableName}
+  
   iamRoleStatements:
     - Effect: Allow
       Action:
@@ -38,30 +45,39 @@ provider:
       # Restrict our IAM role permissions to
       # the specific table for the stage
       Resource:
-        - "Fn::GetAtt": [ ProductsTable, Arn ]  
+        - "Fn::GetAtt": [ ProductsTable, Arn ]
 
 functions:
   getProductsByCategory:
-    handler: getProducts.main
+    handler: getProductsByCategory.main
     events:
       - http:
           path: /products/{category}
           method: get
           cors: true
+  # getAvailability:
+  #   handler: getAvailability.main
+  #   events:
+  #     - http:
+  #         path: /availability/{manufacturer}
+  #         method: get
+  #         cors: true
+  # updateDatabase:
+  #   handler: updateDatabase.main
 
 resources:
   Resources:
     ProductsTable:
       Type: AWS::DynamoDB::Table
       Properties:
-        TableName: products
+        TableName: ${self:custom.productTableName}
         AttributeDefinitions:
-          - AttributeName: manufacturer
+          - AttributeName: category
             AttributeType: S
           - AttributeName: productId
             AttributeType: S
         KeySchema:
-          - AttributeName: manufacturer
+          - AttributeName: category
             KeyType: HASH
           - AttributeName: productId
             KeyType: RANGE
