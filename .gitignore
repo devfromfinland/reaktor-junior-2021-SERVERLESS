@@ -1,3 +1,6 @@
+# Webpack
+.webpack/
+
 # Logs
 logs
 *.log
