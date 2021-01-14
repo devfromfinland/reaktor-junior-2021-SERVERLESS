@@ -1,5 +1,4 @@
 import { fetchProductsByCategory, fetchAvailability } from './libs/oldApi';
-import { updateProducts } from './libs/dynamo-lib';
 import { CATEGORIES } from './libs/helpers';
 import { saveDataToS3 } from './libs/s3-lib';
 
@@ -12,23 +11,6 @@ export const extractAvailabilityText = (text) => {
 const prepProductsBeforeUpdates = (productsData, availabilityData) => {
   const result = [];
 
-  // productsData.forEach((category) => {
-  //   category.forEach((product) => {
-  //     result.push({
-  //       PutRequest: {
-  //         Item: {
-  //           productId: product.id,
-  //           category: product.type,
-  //           name: product.name,
-  //           color: product.color,
-  //           price: product.price,
-  //           manufacturer: product.manufacturer,
-  //           availability: availabilityData[product.id.toUpperCase()]
-  //         }
-  //       }
-  //     });
-  //   });
-  // });
   productsData.forEach((category) => {
     category.forEach((product) => {
       result.push({
@@ -54,7 +36,7 @@ exports.main = async () => {
     productsPromises.push(promise);
   });
 
-  Promise.all(productsPromises).then((allProducts) => {
+  await Promise.all(productsPromises).then(async (allProducts) => {
     const manufacturers = [];
     allProducts.forEach((arrCategory) => {
       arrCategory.forEach((item) => {
@@ -69,7 +51,7 @@ exports.main = async () => {
       availabilityPromises.push(promise);
     });
 
-    Promise.all(availabilityPromises).then(async (allAvailability) => {
+    await Promise.all(availabilityPromises).then(async (allAvailability) => {
       const availabilityData = {};
       for (let i = 0; i < allAvailability.length; i++) {
         allAvailability[i].forEach((item) => {
@@ -79,12 +61,7 @@ exports.main = async () => {
       }
 
       const preparedProducts = prepProductsBeforeUpdates(allProducts, availabilityData);
-
-      // necessary to delete the whole database first to avoid redundant products
-      // which were removed at remote server within the 5 minute frame
-
-      // update products to dynamoDb
-      // await updateProducts(preparedProducts);
+      // console.log('data to update', preparedProducts.length);
 
       // save products data to S3
       await saveDataToS3(preparedProducts);

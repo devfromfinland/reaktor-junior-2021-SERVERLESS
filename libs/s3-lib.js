@@ -15,7 +15,7 @@ export const saveDataToS3 = async (products, filename = 'products.json') => {
 
   try {
     await s3.putObject(params).promise();
-    // console.log('done saving data to S3');
+    console.log('done saving data to S3');
   } catch (err) {
     console.log('error while putting object to S3', err);
     throw new Error({
@@ -32,7 +32,7 @@ export const getDataFromS3 = async (filename = 'products.json') => {
 
   try {
     const data = await s3.getObject(params).promise();
-    // console.log('got the file', typeof data, data.ContentLength);
+    console.log('got the file');
     return JSON.parse(data.Body);
   } catch (err) {
     console.log('error while getting object from S3', err);

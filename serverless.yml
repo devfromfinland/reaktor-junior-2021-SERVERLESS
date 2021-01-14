@@ -63,6 +63,7 @@ functions:
           cors: true
   updateDatabase:
     handler: updateDatabase.main
+    timeout: 60
 
 resources:
   Resources:
