@@ -14,7 +14,7 @@ export const fetchProductsByCategory = async (category) => {
     })
     : await fetch(`${API_BASE_URL}/products/${category}`);
   const data = await res.json();
-  // console.log(`${category}: ${data.length} items`);
+  console.log(`${category}: ${data.length} items`);
   // console.log(data[0]);
   return data;
 };
@@ -33,7 +33,7 @@ export const fetchAvailability = async (manufacturer) => {
       : await fetch(`${API_BASE_URL}/availability/${manufacturer}`);
 
     data = await res.json();
-    // console.log(manufacturer, typeof (data.response), data.response.length);
+    console.log(manufacturer, typeof (data.response), data.response.length);
     if (typeof (data.response) === 'object' && data.response.length > 0) {
       flag = false;
     } else {

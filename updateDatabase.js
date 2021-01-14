@@ -1,6 +1,7 @@
 import { fetchProductsByCategory, fetchAvailability } from './libs/oldApi';
 import { updateProducts } from './libs/dynamo-lib';
 import { CATEGORIES } from './libs/helpers';
+import { saveDataToS3 } from './libs/s3-lib';
 
 export const extractAvailabilityText = (text) => {
   const regex = /<INSTOCKVALUE>(.*?)<\/INSTOCKVALUE>/;
@@ -11,20 +12,33 @@ export const extractAvailabilityText = (text) => {
 const prepProductsBeforeUpdates = (productsData, availabilityData) => {
   const result = [];
 
+  // productsData.forEach((category) => {
+  //   category.forEach((product) => {
+  //     result.push({
+  //       PutRequest: {
+  //         Item: {
+  //           productId: product.id,
+  //           category: product.type,
+  //           name: product.name,
+  //           color: product.color,
+  //           price: product.price,
+  //           manufacturer: product.manufacturer,
+  //           availability: availabilityData[product.id.toUpperCase()]
+  //         }
+  //       }
+  //     });
+  //   });
+  // });
   productsData.forEach((category) => {
     category.forEach((product) => {
       result.push({
-        PutRequest: {
-          Item: {
-            productId: product.id,
-            category: product.type,
-            name: product.name,
-            color: product.color,
-            price: product.price,
-            manufacturer: product.manufacturer,
-            availability: availabilityData[product.id.toUpperCase()]
-          }
-        }
+        productId: product.id,
+        category: product.type,
+        name: product.name,
+        color: product.color,
+        price: product.price,
+        manufacturer: product.manufacturer,
+        availability: availabilityData[product.id.toUpperCase()]
       });
     });
   });
@@ -69,8 +83,11 @@ exports.main = async () => {
       // necessary to delete the whole database first to avoid redundant products
       // which were removed at remote server within the 5 minute frame
 
-      // update products to dynamoDb (21020 products)
-      await updateProducts(preparedProducts);
+      // update products to dynamoDb
+      // await updateProducts(preparedProducts);
+
+      // save products data to S3
+      await saveDataToS3(preparedProducts);
     });
   });
 };

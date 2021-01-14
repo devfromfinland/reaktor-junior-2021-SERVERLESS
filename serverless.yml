@@ -46,6 +46,12 @@ provider:
       # the specific table for the stage
       Resource:
         - "Fn::GetAtt": [ ProductsTable, Arn ]
+    - Effect: Allow
+      Action:
+        - s3:PutObject
+        - s3:GetObject
+      Resource:
+        - "Fn::GetAtt": [ DataBucket, Arn ]
 
 functions:
   getProductsByCategory:
@@ -76,3 +82,21 @@ resources:
             KeyType: RANGE
         # Set the capacity to auto-scale
         BillingMode: PAY_PER_REQUEST
+    DataBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        # Set the CORS policy
+        CorsConfiguration:
+          CorsRules:
+            -
+              AllowedOrigins:
+                - '*'
+              AllowedHeaders:
+                - '*'
+              AllowedMethods:
+                - GET
+                - PUT
+                - POST
+                - DELETE
+                - HEAD
+              MaxAge: 3000
